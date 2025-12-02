@@ -57,8 +57,7 @@ jobs:  # Define jobs (can run in parallel)
         cache: 'npm'
 
     - name: Install dependencies & build
-      run: |
-	npm install
+      run:
         npm start
 
     - name: Setup Pages
