@@ -59,8 +59,7 @@ jobs:  # Define jobs (can run in parallel)
     - name: Install dependencies & build
       run: |
 	npm install
-        npm ci
-        npm run build
+        npm start
 
     - name: Setup Pages
       uses: actions/configure-pages@v5  # Preps for GitHub Pages
