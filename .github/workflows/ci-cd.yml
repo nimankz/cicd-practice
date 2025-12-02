@@ -58,7 +58,6 @@ jobs:  # Define jobs (can run in parallel)
 
     - name: Install dependencies & build
       run:
-		npm install
         npm start
 
     - name: Setup Pages
