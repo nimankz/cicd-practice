@@ -1,5 +1,6 @@
 name: CI/CD for React App  # Name shown in Actions tab
 
+
 on:  # Triggers
   push:
     branches: [ main ]
@@ -57,6 +58,7 @@ jobs:  # Define jobs (can run in parallel)
 
     - name: Install dependencies & build
       run: |
+	npm install
         npm ci
         npm run build
 
