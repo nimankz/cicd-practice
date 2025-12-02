@@ -1,0 +1,73 @@
+name: CI/CD for React App  # Name shown in Actions tab
+
+on:  # Triggers
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:  # Define jobs (can run in parallel)
+  build-and-test:  # Job name
+    runs-on: ubuntu-latest  # Use Ubuntu VM (free, fast)
+
+    steps:  # Steps in this job
+    - name: Checkout code
+      uses: actions/checkout@v4  # Built-in action to get your code
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'  # Match your local Node version
+        cache: 'npm'  # Cache dependencies for speed
+
+    - name: Install dependencies
+      run: npm ci  # Clean install (faster than npm install)
+
+    - name: Run tests
+      run: npm test -- --coverage --watchAll=false  # Run Jest tests with coverage
+
+    - name: Build app
+      run: npm run build  # Creates optimized 'build/' folder
+
+    # Optional: Upload build as artifact (downloadable from Actions tab)
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-output
+        path: build/
+
+  deploy:  # Separate job for deployment (runs after build-and-test succeeds)
+    needs: build-and-test  # Only run if previous job passes
+    if: github.ref == 'refs/heads/main'  # Only on main branch pushes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies & build
+      run: |
+        npm ci
+        npm run build
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v5  # Preps for GitHub Pages
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./build  # Your built React app
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4  # Deploys to https://<username>.github.io/<repo>
